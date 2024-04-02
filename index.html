@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        * {
+            font-family: sans-serif;
+            font-size: 18px;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        .quizContainer {
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 0 30px;
+            gap: 20px;
+        }
+
+        #title {
+            background: #242424;
+            border-radius: .8rem;
+            color: #fff;
+            padding: 20px 20px;
+            text-align: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        #timer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 64px;
+            font-size: 32px;
+            height: 64px;
+            border-radius: 50%;
+            background: #e74d4d;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        #titleContainer {
+            width: 100%;
+            display: flex;
+            gap: 20px;
+            flex-direction: row;
+        }
+
+        #choiceContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f7c055;
+            padding: 30px 30px;
+            border-radius: 20px;
+        }
+
+        #choiceContainer>div {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        #choiceContainer>div>span:nth-child(1) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        #correct {
+            background: #9cd026 !important;
+        }
+
+        #total {
+            font-size: 20;
+            text-align: center;
+            background: #242424;
+            padding: 10px 20px;
+            display: flex;
+            border-radius: 10px;
+            justify-content: center;
+            color: #fff;
+        }
+    </style>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let cQuestion = 0
+
+            const title = document.querySelector("#title")
+
+            const data = [
+                {
+                    "question": "Mừng mưa rơi là lễ hội truyền thống của dân tộc nào thuộc tỉnh Điện Biên?",
+                    "answers": [
+                        "Dân tộc Thái",
+                        "Dân tộc H mông",
+                        "Dân tộc Cống",
+                        "Dân tộc Khơ mú"
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Lễ mừng cơm mới (Kin Khẩu hó) là lễ hội của dân tộc nào?",
+                    "answers": [
+                        "Dân tộc Thái",
+                        "Dân tộc H mông",
+                        "Dân tộc Lào",
+                        "Dân tộc Khơ mú"
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Múa xòe là điệu múa truyền thống của dân tộc nào sau đây?",
+                    "answers": [
+                        "Dân tộc Thái",
+                        "Dân tộc H mông",
+                        "Dân tộc Lào",
+                        "Dân tộc Cống"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Đâu là lễ hội truyền thống của dân tộc Lào tại bản Na Sang 1, xã Núa Ngam, huyện Điện Biên (Điện Biên), được tổ chức vào khoảng thời gian từ ngày 13 đến 15-4 theo Phật lịch hằng năm?",
+                    "answers": [
+                        "Lễ Bun huột nặm (Tết té nước, lễ hội té nước).",
+                        "Kin Lẩu Nó (Lễ hội mừng măng mọc)",
+                        "Lễ hội mừng mưa rơi",
+                        "Kin Khẩu hó (Lễ mừng cơm mới)"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Hiện nay, trên địa bàn tỉnh Điện Biên có bao nhiêu dân tộc sinh sống?",
+                    "answers": [
+                        "18 dân tộc.",
+                        "19 dân tộc.",
+                        "20 dân tộc.",
+                        "22 dân tộc."
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Đâu là món bánh cổ truyền của dân tộc Mông ở tỉnh Điện Biên mỗi dịp tết đến xuân về?",
+                    "answers": [
+                        "Bánh trôi.",
+                        "Bánh khúc.",
+                        "Bánh chưng.",
+                        "Bánh dày."
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Theo số liệu thống kê (năm 2019), dân tộc nào có số lượng đông nhất tỉnh Điện Biên?",
+                    "answers": [
+                        "Dân tộc Thái.",
+                        "Dân tộc Kinh.",
+                        "Dân tộc H mông.",
+                        "dân tộc Khơ mú."
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Bánh Khẩu Xén là đặc sản của đồng bào dân tộc Thái ở huyện nào của tỉnh Điện Biên ?",
+                    "answers": [
+                        "Huyện Điện Biên.",
+                        "Huyện Mường Lay.",
+                        "Huyện Tủa Chùa.",
+                        "Huyện Tuần Giáo."
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Làng nghề trồng, chăm sóc và chế biến chè cổ thụ kết hợp với du lịch thuộc huyện nào của tỉnh Điện Biên?",
+                    "answers": [
+                        "Huyện Tủa Chùa.",
+                        "Huyện Điện Biên.",
+                        "Huyện Mường Nhé.",
+                        "Huyện Điện Biên Đông."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Tết té nước là tết truyền thống của dân tộc…..tại bản Na Sang 1 xã Núa Ngam huyện Điện Biên tỉnh Điện Biên",
+                    "answers": [
+                        "Lào"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Tượng đài Chiến thắng Điện Biên Phủ được đặt ở đâu, xây dựng vào năm nào?",
+                    "answers": [
+                        "Đặt trên cứ điểm đồi D1, xây dựng năm 2004",
+                        "Đặt trên cứ điểm đồi E1, xây dựng năm 2004",
+                        "Đặt trên cứ điểm đồi B1, xây dựng năm 2004",
+                        "Đặt trên cứ điểm đồi D1, xây dựng năm 2014"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Cụm Tượng đài đặt tại Công viên chiến thắng Mường Phăng gồm có bao nhiêu nhân vật?",
+                    "answers": [
+                        "15 nhân vật",
+                        "20 nhân vật",
+                        "25 nhân vật",
+                        "30 nhân vật"
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Tỉnh Điện Biên có 01 di tích được công nhận di tích cấp Quốc gia đặc biệt là di tích nào?",
+                    "answers": [
+                        "Di tích Chiến trường Điện Biên Phủ",
+                        "Hang động Xá Nhè huyện Tủa chùa",
+                        "Hang động Thẳm Khương tại huyện Tuần Giáo",
+                        "Tháp Chiềng Sơ – huyện Điện Biên Đông"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Vì sao lễ hội Hoa ban khai mạc vào ngày 13/3 hàng năm?",
+                    "answers": [
+                        "Ngày kết thúc đợt 1 chiến dịch Điện Biên phủ.",
+                        "Ngày mở màn chiến dịch Điện Biên Phủ.",
+                        "Ngày Bác Hồ gửi thư cho các chiến sĩ Điện Biên.",
+                        "Ngày quân ta tấn công Đồi A1."
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Đài kỉ niệm chiến thắng Him Lam được xây dựng mô phỏng hành động dũng cảm của anh hùng liệt sĩ nào trong chiến dịch Điện Biên Phủ?",
+                    "answers": [
+                        "Mô phỏng hành động lấy thân mình chèn pháo của anh hùng liệt sĩ Tô Vĩnh Diện.",
+                        "Mô phỏng hành động cắm cờ trên nóc hầm Đờ cát của anh hùng Tạ Quốc Luật.",
+                        "Mô phỏng hành động lấy thân mình làm giá súng của anh hùng liệt sĩ Bế Văn Đàn.",
+                        "Mô phỏng hành động lấy thân mình lấp lỗ châu mai của anh hùng liệt sĩ Phan Đình Giót."
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Cầu Mường Thanh có vai trò như thế nào trong chiến dịch Điện Biên phủ 1954",
+                    "answers": [
+                        "Là cây cầu huyết mạch giữa sở chỉ huy tập đoàn cứ điểm Điện Biên Phủ",
+                        "Là cửa ngõ tiếp viện cho các cụm cao điểm phía Đông và Đông Bắc tập đoàn cứ điểm Điện Biên Phủ của thực dân Pháp.",
+                        "Là cửa ngõ tiếp viện cho các cụm cao điểm phía Tây và Tây Bắc tập đoàn cứ điểm Điện Biên Phủ của thực dân Pháp.",
+                        "Đáp án A và B"
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Bức tranh Panoram trong Bảo tàng Chiến thắng Điện Biên phủ - Trường đoạn 1 là gì:",
+                    "answers": [
+                        "“Khúc dạo đầu hùng tráng” - trận Him Lam mở màn Chiến dịch Điện Biên Phủ.",
+                        "“Cuộc đối đầu lịch sử” với hình ảnh hầm hào, giây thép gai, đánh giáp lá cà và hình ảnh quả bộc phá phát nổ trên đồi cao A1",
+                        "“Toàn dân ra trận” là hình ảnh những đoàn xe đạp thồ vận chuyển hàng cung cấp cho chiến dịch",
+                        "Khung cảnh hào hùng về “Chiến thắng Điện Biên”"
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Bản Nà Tấu, xã Nà Tấu, thành phố Điện Biên phủ là hợp tác xã điển hình và phát triển mạnh nhất về nghề truyền thống nào?",
+                    "answers": [
+                        "Nghề mây tre đan",
+                        "Nghề dệt thổ cẩm",
+                        "Nghề dệt thổ cẩm",
+                        "Nghề dệt thổ cẩm"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Bài học nào của cuộc kháng chiến chống Pháp (1945 - 1954) được Đảng ta vận dụng để giải quyết vấn đề biển đảo Việt Nam hiện nay?",
+                    "answers": [
+                        "Giành thắng lợi quân sự quyết định",
+                        "Kết hợp đấu tranh kinh tế với ngoại giao",
+                        "Phát huy sức mạnh đoàn kết toàn dân tộc",
+                        "Kết hợp đấu tranh chính trị với ngoại giao"
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Loại nghệ thuật âm nhạc dân gian, lưu giữ những nét đẹp văn hoá truyền thống, đáp ứng nhu cầu tâm linh, của người Thái trắng là",
+                    "answers": [
+                        "Hát mo",
+                        "Múa xòe",
+                        "Hát giao duyên",
+                        "Hát then"
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Trên địa bàn tỉnh Điện Biên, có 01 di tích được công nhận xếp hạng di tích cấp Quốc gia đặc biệt đó là:",
+                    "answers": [
+                        "Di tích hang động Huổi Cang, Huổi Đáp (Mường Chà)",
+                        "Di tích hang động Xá Nhè (Tủa Chùa).",
+                        "Di tích hang Thẳm Khương (Tuần Giáo)",
+                        "Di tích Chiến trường Điện Biên Phủ."
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Nét văn hoá về kiến trúc đặc sắc của người Hà Nhì ở Điện Biên là:",
+                    "answers": [
+                        "Nhà trình tường.",
+                        "Nhà sàn.",
+                        "Nhà gỗ.",
+                        "Nhà xây."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Được tổ chức thường niên tại tỉnh Điện Biên từ năm 2014, Lễ hội nào đã trở thành biểu tượng văn hóa cho mảnh đất, con người Điện Biên?",
+                    "answers": [
+                        "Lễ hội mừng mưa rơi của dân tộc Khơ Mú.",
+                        "Lễ cúng bản của người Cống.",
+                        "Lễ hội Hoa ban.",
+                        "Lễ mừng cơm mới dân tộc Si La."
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Tại Kỳ họp lần thứ 16 (tháng 12/2021) của Ủy ban Liên chính phủ Công ước 2003 của UNESCO đã chính thức ghi danh di sản văn hóa phi vật thể nào của Việt Nam vào Danh sách Di sản văn hóa phi vật thể đại diện của nhân loại.",
+                    "answers": [
+                        "Nghệ thuật làm trang phục của người Hà Nhì ở Điện Biên.",
+                        "Nghệ thuật Xòe Thái.",
+                        "Nghệ thuật múa của người Lào ở Điện Biên.",
+                        "Lễ cúng dòng họ của người Mông trắng ở Điện Biên."
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Chủ đề của năm Du lịch quốc gia - Điện Biên 2024 là:",
+                    "answers": [
+                        "\"Vinh quang Điện Biên Phủ - Trải nghiệm bất tận”.",
+                        "“Điện Biên Phủ - Bản hùng ca bất diệt”.",
+                        "“Điện Biên Phủ - Điểm hẹn lịch sử”.",
+                        "“Về miền Hoa Ban”."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Toạ lạc trên ngọn đồi F, phường Mường Thanh, thành phố Điện Biên Phủ, công trình nào góp phần tạo thêm một điểm nhấn văn hóa tâm linh cho du khách khi đến thăm Điện Biên.",
+                    "answers": [
+                        "Nghĩa trang Liệt sĩ Him Lam.",
+                        "Nghĩa trang Liệt sĩ Độc lập.",
+                        "Nghĩa trang Liệt sĩ A1.",
+                        "Đền thờ Liệt sĩ tại Chiến trường Điện Biên Phủ."
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Trò chơi dân gian truyền thống đã trở thành nét sinh hoạt văn hóa cộng đồng có ý nghĩa nhân văn cao đẹp của dân tộc Mông ở Tây Bắc nói chung và ở Điện Biên nói riêng đó là:",
+                    "answers": [
+                        "Trò chơi ném pao.",
+                        "Trò chơi ném còn.",
+                        "Trò chơi đánh cù.",
+                        "Trò chơi đánh khăng."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Khu di tích Chiến trường Điện Biên Phủ gồm bao nhiêu di tích thành phần?",
+                    "answers": [
+                        "44 di tích thành phần.",
+                        "45 di tích thành phần.",
+                        "46 di tích thành phần.",
+                        "47 di tích thành phần."
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Nơi lưu giữ các hiện vật trong chiến dịch lịch sử Điện Biên Phủ 1954 là công trình:",
+                    "answers": [
+                        "Đền thờ các anh hùng liệt sĩ tại chiến trường Điện Biên Phủ",
+                        "Cụm tượng đài kéo pháo bằng tay.",
+                        "Bảo tàng Chiến thắng lịch sử Điện Biên Phủ",
+                        "Tượng đài Chiến thắng lịch sử Điện Biên Phủ"
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Xu hướng du lịch đang rất được ưa chuộng, có sức hút đối với du khách trong nước và quốc tế tại Điện Biên là:",
+                    "answers": [
+                        "Du lịch cộng đồng.",
+                        "Du lịch thể thao.",
+                        "Du lịch sinh thái.",
+                        "Du lịch nghỉ dưỡng."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Người đã chế tạo chiếc xe cút kít phục vụ chiến dịch Điện Biên Phủ bằng bàn thờ tổ tiên là ai?",
+                    "answers": [
+                        "Nguyễn Viết Nhâm.",
+                        "Lê Công Bỉnh.",
+                        "Nguyễn Văn Bể.",
+                        "Trịnh Đình Bầm."
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Trong chiến dịch Điện Biên Phủ, Quân đội Việt Nam chiếm cứ điểm Bản Kéo bằng cách nào?",
+                    "answers": [
+                        "Bất ngờ tấn công.",
+                        "Bao vây tiêu diệt.",
+                        "Vận động địch ra hàng.",
+                        "Tấn công tiêu diệt."
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Sân bay Mường Thanh có vai trò chiến lược như thế nào đối với thực dân Pháp trong tập đoàn cứ điểm Điện Biên Phủ?",
+                    "answers": [
+                        "Là con đường giao thông thuận lợi và an toàn.",
+                        "Đường giao thông thuận lợi và duy nhất đối với quân đội Pháp.",
+                        "Bảo vệ ở phía Nam tập đoàn cứ điểm Điện Biên Phủ.",
+                        "Là “cuống họng” bảo vệ phân khu trung tâm."
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Chiến thắng nào mở màn cho đợt tổng công kích cuối cùng vào Sở Chỉ huy Tập đoàn cứ điểm Điện Biên Phủ giành thắng lợi hoàn toàn?",
+                    "answers": [
+                        "Chiến thắng đồi A1.",
+                        "Chiến thắng đồi Độc Lập.",
+                        "Chiến thắng đồi Him Lam.",
+                        "Chiến thắng đồi D1"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Đài kỉ niệm chiến thắng Him Lam được xây dựng mô phỏng hành động dũng cảm của anh hùng liệt sĩ nào trong chiến dịch Điện Biên Phủ 1954?",
+                    "answers": [
+                        "Bế Văn Đàn.",
+                        "Tô Vĩnh Diện.",
+                        "Phan Đình Giót",
+                        "Trần Can."
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Trong chiến dịch Điện Biên Phủ, quyết định khó khăn nhất trong cuộc đời cầm quân của Đại tướng Võ Nguyên Giáp là chuyển phương án tác chiến từ:",
+                    "answers": [
+                        "“đánh nhanh thắng nhanh” sang “đánh chắc, tiến chắc”.",
+                        "“đánh nhanh, thắng nhanh” sang “đánh nhanh, chắc thắng”.",
+                        "“đánh nhanh thắng nhanh” sang “đánh lâu dài”.",
+                        "“đánh nhanh thắng nhanh” sang “vừa đánh vừa đàm”."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Nội dung bức phù điêu đặt tại chân tượng đài chiến thắng Điện Biên Phủ miêu tả",
+                    "answers": [
+                        "trận đánh ác liệt trên đồi D.",
+                        "những trận đánh ác liệt trong đợt tấn công thứ ba.",
+                        "quá trình chuẩn bị cho Chiến dịch Điện Biên Phủ.",
+                        "toàn bộ chiến dịch Điện Biên Phủ"
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Sáng 15/10/2022, tại trung tâm xã Sín Chải, huyện Tủa Chùa (tỉnh Điện Biên), Ủy ban Nhân dân huyện Tủa Chùa cùng Hội Bảo vệ thiên nhiên và Môi trường Việt Nam đã phối hợp tổ chức công bố và trao Bằng công nhận Cây di sản Việt Nam đối với:",
+                    "answers": [
+                        "100 cây chè Shan tuyết",
+                        "Cây lúa nương",
+                        "Cây ngô lai",
+                        "Cây dâu tằm"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Các sản phẩm được công nhận đạt chuẩn OCOP của tỉnh Điện Biên năm 2019 là:",
+                    "answers": [
+                        "Gạo Tám thơm, gạo Séng Cù Điện Biên.",
+                        "Chè cây cao cổ thụ Tủa Chùa.",
+                        "Mật ong Hoa Ban, mật ong bánh tổ.",
+                        "Tất cả các phương án trên."
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Nhà máy thuỷ điện lớn nhất tỉnh Điện Biên là:",
+                    "answers": [
+                        "Nhà máy thủy điện Thác Bay",
+                        "Nhà máy thủy điện Nà Lơi",
+                        "Nhà máy thủy điện Nậm Mức",
+                        "Nhà máy thủy điện Trung Thu"
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Cây trồng chủ lực của tỉnh Điện Biên là:",
+                    "answers": [
+                        "Lúa, cà phê, chè, mắc ca, rau, quả.",
+                        "Ngô, cà phê, đậu tương.",
+                        "Chè, cà phê, đậu tương.",
+                        "Lúa, ngô, mắc ca, lạc."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Trong Bảo tàng Chiến thắng Điện Biên Phủ, Bức tranh Panorama được chia làm mấy trường đoạn?",
+                    "answers": [
+                        "2 trường đoạn.",
+                        "3 trường đoạn.",
+                        "4 trường đoạn.",
+                        "5 trường đoạn."
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Tỉnh Điện Biên có các nghề tiểu thủ công nghiệp truyền thống nào?",
+                    "answers": [
+                        "Dệt, may trang phục thổ cẩm; làm gốm.",
+                        "Đan lát, điêu khắc tượng đá",
+                        "Mây tre đan, đồ mĩ nghệ, rèn sắt.",
+                        "Dệt, may trang phục thổ cẩm, mây tre đan, đồ mĩ nghệ"
+                    ],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Tên gọi Điện Biên Phủ có từ năm nào? Do ai đặt?",
+                    "answers": [
+                        "Năm 1841, do vua Thiệu Trị đặt.",
+                        "Năm 1909, do Toàn quyền Đông Dương ra Nghị định thành lập.",
+                        "Năm 1992, theo quyết định số 130/HĐ-BT của Hội đồng Bộ trưởng.",
+                        "Năm 2003, theo Nghị định số 110/2003/NĐ-CP."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Điện Biên là tỉnh có chung đường biên giới với quốc gia nào?",
+                    "answers": [
+                        "Lào và Cam-pu-chia.",
+                        "Lào và Trung Quốc.",
+                        "Cam-pu-chia và Trung Quốc.",
+                        "Thái Lan và Trung Quốc"
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Điện Biên là nơi hội tụ của bao nhiêu dân tộc anh em sinh sống.",
+                    "answers": [
+                        "17 dân tộc.",
+                        "18 dân tộc.",
+                        "19 dân tộc.",
+                        "20 dân tộc."
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Tỉnh Điện Biên gồm bao nhiêu đơn vị hành chính cấp huyện/thị/thành phố?",
+                    "answers": [
+                        "1 thành phố, 1 thị xã và 7 huyện.",
+                        "1 thành phố, 1 thị xã và 8 huyện.",
+                        "1 thành phố, 1 thị xã và 9 huyện.",
+                        "1 thành phố, 1 thị xã và 10 huyện."
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Năm 2014, đường 7/5 ở Điện Biên được đổi tên thành đường",
+                    "answers": [
+                        "Sùng Phái Sinh",
+                        "Nguyễn Chí Thanh",
+                        "Võ Nguyên Giáp",
+                        "Trần Can"
+                    ],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Tỉnh Điện Biên được tách ra từ tỉnh nào?",
+                    "answers": [
+                        "Lai Châu",
+                        "Sơn La",
+                        "Hoà Bình",
+                        "Lào Cai"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Dân tộc nào chiếm số lượng chủ yếu trong cộng đồng dân cư tỉnh Điện Biên?",
+                    "answers": [
+                        "Dân tộc Mông",
+                        "Dân tộc Thái",
+                        "Dân tộc Kinh",
+                        "Dân tộc Khơ mú"
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Đồng bào các dân tộc Tây Bắc thực hiện chủ trương hậu cần tại chỗ đã đóng góp bao nhiêu tấn gạo cho mặt trận Điện Biên Phủ?",
+                    "answers": [
+                        "2.666 tấn",
+                        "7.143 tấn",
+                        "4.361 tấn",
+                        "25.056 tấn"
+                    ],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Tác giả của ca khúc “Giải phóng Điện Biên” là nhạc sĩ",
+                    "answers": [
+                        "Đỗ Nhuận",
+                        "Hoàng Vân.",
+                        "Phạm Tuyên.",
+                        "Văn Cao."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Làng nghề mây tre đan truyền thống điển hình và phát triển mạnh nhất tỉnh Điện Biên là:",
+                    "answers": [
+                        "Bản Nà Tấu, xã Nà Tấu, thành phố Điện Biên Phủ.",
+                        "Bản Mển, xã Thanh Nưa, huyện Điện Biên.",
+                        "Bản Co Mỵ, xã Thanh Chăn, huyện Điện Biên.",
+                        "Bản Co Củ, xã Thanh Minh, thành phố Điện Biên Phủ."
+                    ],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Tỉnh Điện Biên bảo tồn và phát huy di sản văn hoá các dân tộc để phát triển ngành kinh tế mũi nhọn nào?",
+                    "answers": [
+                        "Nông nghiệp",
+                        "Công nghiệp",
+                        "Du lịch",
+                        "Lâm nghiệp"
+                    ],
+                    "correctAnswer": 3
+                }
+            ]
+
+            const reData = () => {
+                title.innerText = data[cQuestion].question
+
+                for (const answer in data[cQuestion].answers) {
+                    const dom = document.querySelector(`#choiceContainer>div:nth-child(${parseInt(answer) + 1})`)
+                    dom.id = ""
+                    const dom2 = document.querySelector(`#choiceContainer>div:nth-child(${parseInt(answer) + 1})>span:nth-child(2)`)
+                    dom2.innerText = data[cQuestion].answers[answer]
+                }
+            }
+
+            reData()
+
+            let calcTime = false
+
+            const timer = document.querySelector("#timer")
+            let cTime = 10
+            const total = document.querySelector("#total")
+            const reCalcQues = () => {
+                total.innerText = `Số câu hỏi: ${cQuestion + 1}/${data.length}`
+            }
+            const reCalcTimer = () => {
+                timer.innerText = cTime
+            }
+            reCalcQues()
+            reCalcTimer()
+            const getAnswer = () => {
+                document.querySelector(`#choiceContainer>div:nth-child(${data[cQuestion].correctAnswer})`).id = "correct"
+            }
+
+            let answered = false
+
+            document.body.onclick = () => {
+                if (cTime === 0 && calcTime && !answered) {
+                    getAnswer()
+                    calcTime = false
+                    answered = true
+                } else {
+                    if (!calcTime && !answered) setTimeout(decTime, 1000)
+                    else if (cQuestion < data.length) {
+                        if (cTime <= 0) {
+                            answered = false
+                            cQuestion++
+                            cTime = 10
+                            reCalcQues()
+                            reCalcTimer()
+                            reData()
+                            setTimeout(decTime, 1000)
+                        }
+                    }
+                }
+                if (!calcTime && cTime > 0) calcTime = true
+            }
+
+            const decTime = () => {
+                if (calcTime)
+                    cTime -= 1
+                else return
+                reCalcTimer()
+                if (cTime > 0 && calcTime) {
+                    setTimeout(decTime, 1000)
+                }
+            }
+        })
+    </script>
+</head>
+
+<body>
+    <div class="quizContainer">
+        <div id="total"></div>
+        <div id="timer"></div>
+        <div id="titleContainer">
+            <div id="title">
+                Test
+            </div>
+        </div>
+        <div id="choiceContainer">
+            <div><span>A</span> <span>asdsad</span></div>
+            <div><span>B</span> <span>asdsad</span></div>
+            <div><span>C</span> <span>asdsad</span></div>
+            <div><span>D</span> <span>asdsad</span></div>
+        </div>
+    </div>
+</body>
+
+</html>
