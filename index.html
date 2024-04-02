@@ -684,24 +684,24 @@
                     calcTime = false
                     answered = true
                 } else {
-                    if (!calcTime && !answered) setTimeout(decTime, 1000)
-                    else if (cQuestion < data.length) {
-                        if (cTime <= 0) {
-                            answered = false
-                            cQuestion++
-                            cTime = 10
-                            reCalcQues()
-                            reCalcTimer()
-                            reData()
-                            setTimeout(decTime, 1000)
-                        }
+                    if (!calcTime && !answered) {
+                        calcTime = true
+                        setTimeout(decTime, 1000)
+                    }
+                    else if (cQuestion < data.length && cTime <= 0) {
+                        answered = false
+                        calcTime = false
+                        cQuestion++
+                        cTime = 10
+                        reCalcQues()
+                        reCalcTimer()
+                        reData()
                     }
                 }
-                if (!calcTime && cTime > 0) calcTime = true
             }
 
             const decTime = () => {
-                if (calcTime)
+                if (calcTime && cTime > 0)
                     cTime -= 1
                 else return
                 reCalcTimer()
