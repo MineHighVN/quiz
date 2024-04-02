@@ -659,6 +659,11 @@
 
             reData()
 
+            const playSound = () => {
+                audio = new Audio('clockSound.mp3');
+                audio.play();
+            }
+
             let calcTime = false
 
             const timer = document.querySelector("#timer")
@@ -686,6 +691,7 @@
                 } else {
                     if (!calcTime && !answered) {
                         calcTime = true
+                        playSound()
                         setTimeout(decTime, 1000)
                     }
                     else if (cQuestion < data.length && cTime <= 0) {
@@ -701,8 +707,10 @@
             }
 
             const decTime = () => {
-                if (calcTime && cTime > 0)
+                if (calcTime && cTime > 0) {
                     cTime -= 1
+                    playSound()
+                }
                 else return
                 reCalcTimer()
                 if (cTime > 0 && calcTime) {
