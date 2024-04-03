@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        * {
+            font-family: sans-serif;
+            font-size: 18px;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        .quizContainer {
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 0 30px;
+            gap: 20px;
+        }
+
+        #title {
+            background: #242424;
+            border-radius: .8rem;
+            color: #fff;
+            padding: 20px 20px;
+            text-align: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        #timer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 64px;
+            font-size: 32px;
+            height: 64px;
+            border-radius: 50%;
+            background: #e74d4d;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        #titleContainer {
+            width: 100%;
+            display: flex;
+            gap: 20px;
+            flex-direction: row;
+        }
+
+        #choiceContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f7c055;
+            padding: 30px 30px;
+            border-radius: 20px;
+        }
+
+        #choiceContainer>div {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        #choiceContainer>div>span:nth-child(1) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        #correct {
+            background: #9cd026 !important;
+        }
+
+        #total {
+            font-size: 20;
+            text-align: center;
+            background: #242424;
+            padding: 10px 20px;
+            display: flex;
+            border-radius: 10px;
+            justify-content: center;
+            color: #fff;
+        }
+    </style>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let cQuestion = 0
+
+            const title = document.querySelector("#title")
+
+            const data = [
+                {
+                    "question": "Tuần lễ Biển và Hải đảo Việt Nam được tổ chức vào thời gian nào trong năm?",
+                    "answers": ["từ ngày 1/6 đến ngày 5/6 hàng năm.", "từ ngày 1/6 đến ngày 6/6 hàng năm.", "từ ngày 1/6 đến ngày 7/6 hàng năm.", "từ ngày 1/6 đến ngày 8/6 hàng năm."],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Điền từ còn thiếu vào chỗ …….Hồ Chí Minh xúc động nói: “Ngày trước ta chỉ có đêm và rừng. Ngày nay ta có ngày, có trời, có biển. Bờ biển ta dài tươi đẹp, ta phải biết ……… lấy nó”.",
+                    "answers": ["Tự hào.", "Giữ gìn.", "Bảo tồn.", "Nắm bắt."],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Năm nào ……….Quốc hội Việt Nam quyết định tên gọi chính thức là Côn Đảo?",
+                    "answers": ["Năm 1977", "Năm 1970", "Năm 1971", "Năm 1973"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "1 hải lý bằng bao nhiêu km?",
+                    "answers": ["1,856 km", "1,854km", "1,852 km", "1,853 km"],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "1 hải lý bằng bao nhiêu m?",
+                    "answers": ["1852m", "1853m", "1854m", "1854m"],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Nước ta có bao nhiêu đảo lớn nhỏ. Đảo lớn nhất là đảo nào?",
+                    "answers": ["2500 hòn đảo lớn nhỏ, lớn nhất là Đảo.", "Vùng biển nước ta có gần 4.000 hòn đảo lớn nhỏ. Đảo lớn nhất là đảo Phú Quốc thuộc tỉnh Kiên Giang."],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Trong tổng số 21 đảo với 33 điểm đóng quân của bộ đội ta tại quần đảo nào….?",
+                    "answers": ["Quần Đảo Hoàng Sa", "Quần đảo Trường Sa", "Quần đảo Cát Bà", "Quần đảo Cô Tô"],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Việt Nam cùng tiếp giáp biển Đông với bao nhiêu nước….?",
+                    "answers": ["5 Nước", "6 nước", "7 nước", "8 nước"],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Bờ biển Việt Nam kéo dài từ tỉnh nào đến tỉnh nào?",
+                    "answers": ["Từ Hà Tĩnh đến Kiên Giang.", "Từ Huế đến Kiên Giang", "Từ Quảng Ninh đến Kiên Giang", "Từ Đà Nẵng đến Kiên Giang"],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Đường bờ biển nước ta dài bao nhiêu…km?",
+                    "answers": ["3260km", "3261 km", "3262km", "3263 km"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Trong bài thơ Tổ Quốc Nhìn Từ Biển hòn đảo được nhắc đến “gối đầu lên sóng dữ”………..",
+                    "answers": ["Đảo Cô Tô", "Đảo Cồn Cỏ", "Côn Đảo", "Đảo Bạch Long Vĩ"],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "“Ngày Biển (Đại dương) thế giới” được diễn ra vào ngày nào?",
+                    "answers": ["08/6 hằng năm", "07/6 hằng năm", "09/6 hằng năm", "6/8 hằng năm"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Vịnh nào sau đây được UNESCO công nhận là Di sản thiên nhiên thế giới?",
+                    "answers": ["Vịnh Hạ Long", "Vịnh Nha Trang", "Vịnh Cam Ranh", "Vịnh Lăng Cô"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Dòng sông Bạch Đằng nằm giữa hai tỉnh nào?",
+                    "answers": ["Thái Bình và Hải Phòng", "Hải Dương và Hải Phòng", "Quảng Ninh và Hải Phòng", "Hà Nội và Hải Phòng"],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Diện tích vùng biển nước ta rộng lớn, gồm mấy bộ phận?",
+                    "answers": ["8 bộ phận", "7 bộ phận", "6 bộ phận", "5 bộ phận"],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Huyện Đảo Vân Đồn thuộc tỉnh thành nào?",
+                    "answers": ["Quảng Ngãi", "Nha Trang", "Quảng Ninh", "Khánh Hoà"],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Hiện nay huyện đảo Hoàng Sa thuộc quyền quản lý hành chính của tỉnh, thành phố nào?",
+                    "answers": ["Quảng Ngãi", "Nha Trang", "Đà Nẵng", "Khánh Hoà"],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Vịnh Hạ Long mấy lần được UNESCO công nhận là Di sản thế giới? Vào năm nào?",
+                    "answers": ["2 lần năm 1994 và 2000", "2 lần năm 1994 và 2001", "2 lần năm 1993 và 2000", "2 lần năm 1995 và 2001"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Bạn hãy cho biết Việt Nam cùng các quốc gia ASEAN và Trung Quốc đã ký kết bản Tuyên bố về cách ứng xử của các bên trên Biển Đông (DOC) vào ngày, tháng, năm nào?",
+                    "answers": ["Ngày 04/11/2002", "Ngày 05/11/2002", "Ngày 06/11/2002", "Ngày 07/11/2002"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Quần đảo Trường Sa được giải phóng vào ngày, tháng, năm nào?",
+                    "answers": ["Ngày 29/4/1975", "Ngày 29/4/1974", "Ngày 29/4/1973", "Ngày 29/4/1972"],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Cục Cảnh sát biển Việt Nam thuộc Bộ Tư lệnh Hải quân được thành lập vào ngày, tháng, năm nào?",
+                    "answers": ["28/8/1988", "26/8/1988", "28/6/1988", "8/8/1988"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Huyền thoại đường Hồ Chí Minh trên biển được quân đội ta thiết lập từ năm nào đến năm nào?",
+                    "answers": ["Từ năm 1960 – 1975", "Từ năm 1961 – 1975", "Từ năm 1960 – 1975", "Từ năm 1963 – 1975"],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Việt Nam phê chuẩn Công ước của Liên Hợp quốc về Luật Biển năm 1982 vào ngày, tháng, năm nào?",
+                    "answers": ["Ngày 3/6/1994", "Ngày 13/6/1994", "Ngày 23/6/1994", "Ngày 30/6/1994"],
+                    "correctAnswer": 3
+                },
+                {
+                    "question": "Bạn hãy cho biết Biển Đông rộng khoảng bao nhiêu km2?",
+                    "answers": ["Khoảng 3.047.000 km2", "Khoảng 3.147.000 km2", "Khoảng 3.247.000 km2", "Khoảng 3.447.000 km2"],
+                    "correctAnswer": 4
+                },
+                {
+                    "question": "Bạn hãy cho biết Lãnh hải của nước CHXHCNVN rộng bao nhiêu hải lý?",
+                    "answers": ["2 hải lý", "12 hải lý", "22 hải lý", "32 hải lý"],
+                    "correctAnswer": 2
+                },
+                {
+                    "question": "Bạn hãy cho biết Luật Biển Việt Nam có hiệu lực từ ngày, tháng, năm nào?",
+                    "answers": ["01/01/2013", "02/01/2013", "01/02/2013", "03/01/2013"],
+                    "correctAnswer": 1
+                },
+                {
+                    "question": "Bờ biển nước ta nằm phía nào của biển Đông?",
+                    "answers": ["Phía Tây Nam", "Phía Tây Đông", "Phía Nam", "Phía Tây"],
+                    "correctAnswer": 4
+                }
+            ]
+
+            const reData = () => {
+                title.innerText = data[cQuestion].question
+
+                for (const answer in data[cQuestion].answers) {
+                    const dom = document.querySelector(`#choiceContainer>div:nth-child(${parseInt(answer) + 1})`)
+                    dom.id = ""
+                    const dom2 = document.querySelector(`#choiceContainer>div:nth-child(${parseInt(answer) + 1})>span:nth-child(2)`)
+                    dom2.innerText = data[cQuestion].answers[answer]
+                }
+            }
+
+            reData()
+
+            const playSound = () => {
+                audio = new Audio('clockSound.mp3');
+                audio.play();
+            }
+
+            let calcTime = false
+
+            const timer = document.querySelector("#timer")
+            let cTime = 10
+            const total = document.querySelector("#total")
+            const reCalcQues = () => {
+                total.innerText = `Số câu hỏi: ${cQuestion + 1}/${data.length}`
+            }
+            const reCalcTimer = () => {
+                timer.innerText = cTime
+            }
+            reCalcQues()
+            reCalcTimer()
+            const getAnswer = () => {
+                document.querySelector(`#choiceContainer>div:nth-child(${data[cQuestion].correctAnswer})`).id = "correct"
+            }
+
+            let answered = false
+
+            document.body.onclick = () => {
+                if (cTime === 0 && calcTime && !answered) {
+                    getAnswer()
+                    calcTime = false
+                    answered = true
+                } else {
+                    if (!calcTime && !answered) {
+                        calcTime = true
+                        playSound()
+                        setTimeout(decTime, 1000)
+                    }
+                    else if (cQuestion < data.length && cTime <= 0) {
+                        answered = false
+                        calcTime = false
+                        cQuestion++
+                        cTime = 10
+                        reCalcQues()
+                        reCalcTimer()
+                        reData()
+                    }
+                }
+            }
+
+            const decTime = () => {
+                if (calcTime && cTime > 0) {
+                    cTime -= 1
+                    playSound()
+                }
+                else return
+                reCalcTimer()
+                if (cTime > 0 && calcTime) {
+                    setTimeout(decTime, 1000)
+                }
+            }
+        })
+    </script>
+</head>
+
+<body>
+    <div class="quizContainer">
+        <div id="total"></div>
+        <div id="timer"></div>
+        <div id="titleContainer">
+            <div id="title">
+                Test
+            </div>
+        </div>
+        <div id="choiceContainer">
+            <div><span>A</span> <span>asdsad</span></div>
+            <div><span>B</span> <span>asdsad</span></div>
+            <div><span>C</span> <span>asdsad</span></div>
+            <div><span>D</span> <span>asdsad</span></div>
+        </div>
+    </div>
+</body>
+
+</html>
